@@ -8,7 +8,7 @@ import PatientDetails from './components/PatientDetails';
 
 import SkinScan from './components/SkinScan';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
-import MwanzoChat from './components/MwanzoChat';
+import JeevanChat from './components/JeevanChat';
 import './index.css';
 
 function App() {
@@ -30,7 +30,7 @@ function App() {
             <Route path="/multimodal" element={<Navigate to="/charma-scan" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-          <MwanzoChat />
+          <JeevanChat />
         </div>
       </BrowserRouter>
     </DarkModeProvider>

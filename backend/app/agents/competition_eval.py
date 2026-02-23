@@ -641,14 +641,13 @@ class WorkflowEvaluator:
         self.results = []
         start_time = time.time()
 
-        print("\n" + "=" * 70)
-        print("MedAssist CHW - Competition Evaluation")
-        print(f"Running {len(self.test_cases)} clinical test cases")
-        print("=" * 70 + "\n")
+        logger.info("=" * 70)
+        logger.info("MedAssist CHW - Competition Evaluation")
+        logger.info(f"Running {len(self.test_cases)} clinical test cases")
+        logger.info("=" * 70)
 
         for i, tc in enumerate(self.test_cases, 1):
             tc_start = time.time()
-            print(f"[{i:2d}/{len(self.test_cases)}] {tc['id']}: {tc['name']}", end=" ... ", flush=True)
 
             try:
                 ca_tool = registry.get_tool("clinical_assessment")
@@ -673,11 +672,10 @@ class WorkflowEvaluator:
                     "mismatch": "FAIL",
                 }.get(evaluation["scores"]["triage_match"], "?")
 
-                print(
-                    f"{evaluation['actual_triage']:10s} "
-                    f"[{triage_icon:4s}] "
-                    f"score={evaluation['scores']['composite']:.2f} "
-                    f"({evaluation['latency_s']}s)"
+                logger.info(
+                    f"[{i:2d}/{len(self.test_cases)}] {tc['id']}: {tc['name']} ... "
+                    f"{evaluation['actual_triage']:10s} [{triage_icon:4s}] "
+                    f"score={evaluation['scores']['composite']:.2f} ({evaluation['latency_s']}s)"
                 )
 
             except Exception as e:
@@ -693,7 +691,7 @@ class WorkflowEvaluator:
                     "error": str(e),
                     "latency_s": round(time.time() - tc_start, 1),
                 }
-                print(f"ERROR: {e}")
+                logger.error(f"[{i:2d}/{len(self.test_cases)}] {tc['id']}: {tc['name']} ERROR: {e}")
 
             self.results.append(evaluation)
 
@@ -774,69 +772,64 @@ class WorkflowEvaluator:
             "detailed_results": self.results,
         }
 
-        # Print summary
-        print("\n" + "=" * 70)
-        print("EVALUATION SUMMARY")
-        print("=" * 70)
-        print(f"Total cases:              {total}")
-        print(f"Successful runs:          {len(successful)}")
-        print(f"Failed runs:              {len(failed_runs)}")
-        print(f"Total time:               {total_time}s")
-        print(f"Avg latency per case:     {round(avg_latency, 1)}s")
-        print()
-        print("TRIAGE ACCURACY:")
-        print(f"  Exact match:            {exact_matches}/{len(successful)} ({report['summary']['triage_exact_accuracy']}%)")
-        print(f"  Acceptable (incl. conservative): {acceptable}/{len(successful)} ({report['summary']['triage_acceptable_accuracy']}%)")
-        print(f"  Under-triage:           {under_triage} (DANGEROUS)")
-        print(f"  Critical misses:        {critical_misses} (EMERGENCY → ROUTINE)")
-        print()
-        print("SAFETY DETECTION:")
-        print(f"  Safety-critical cases:  {len(safety_cases)}")
-        print(f"  Correctly flagged:      {safety_detected}/{len(safety_cases)} ({report['summary']['safety_detection_rate']}%)")
-        print()
-        print("SCORES (weighted average):")
-        print(f"  Composite:              {avg_composite:.3f}")
-        print(f"  Triage:                 {avg_triage:.3f}")
-        print(f"  Safety:                 {avg_safety:.3f}")
-        print(f"  Diagnosis:              {avg_diagnosis:.3f}")
-        print()
-        print("BY CATEGORY:")
+        # Log summary
+        logger.info("=" * 70)
+        logger.info("EVALUATION SUMMARY")
+        logger.info("=" * 70)
+        logger.info(f"Total cases:              {total}")
+        logger.info(f"Successful runs:          {len(successful)}")
+        logger.info(f"Failed runs:              {len(failed_runs)}")
+        logger.info(f"Total time:               {total_time}s")
+        logger.info(f"Avg latency per case:     {round(avg_latency, 1)}s")
+        logger.info("TRIAGE ACCURACY:")
+        logger.info(f"  Exact match:            {exact_matches}/{len(successful)} ({report['summary']['triage_exact_accuracy']}%)")
+        logger.info(f"  Acceptable (incl. conservative): {acceptable}/{len(successful)} ({report['summary']['triage_acceptable_accuracy']}%)")
+        logger.info(f"  Under-triage:           {under_triage} (DANGEROUS)")
+        logger.info(f"  Critical misses:        {critical_misses} (EMERGENCY -> ROUTINE)")
+        logger.info("SAFETY DETECTION:")
+        logger.info(f"  Safety-critical cases:  {len(safety_cases)}")
+        logger.info(f"  Correctly flagged:      {safety_detected}/{len(safety_cases)} ({report['summary']['safety_detection_rate']}%)")
+        logger.info("SCORES (weighted average):")
+        logger.info(f"  Composite:              {avg_composite:.3f}")
+        logger.info(f"  Triage:                 {avg_triage:.3f}")
+        logger.info(f"  Safety:                 {avg_safety:.3f}")
+        logger.info(f"  Diagnosis:              {avg_diagnosis:.3f}")
+        logger.info("BY CATEGORY:")
         for cat, v in sorted(categories.items()):
             acc = round(v["triage_correct"] / max(v["count"], 1) * 100, 1)
             comp = round(v["composite_sum"] / max(v["count"], 1), 3)
-            print(f"  {cat:20s}  n={v['count']:2d}  triage={acc:5.1f}%  composite={comp:.3f}")
-        print()
-        print("CONFUSION MATRIX (expected → actual):")
-        print(f"{'':>15s} {'EMERGENCY':>11s} {'URGENT':>11s} {'ROUTINE':>11s}")
+            logger.info(f"  {cat:20s}  n={v['count']:2d}  triage={acc:5.1f}%  composite={comp:.3f}")
+        logger.info("CONFUSION MATRIX (expected -> actual):")
+        logger.info(f"{'':>15s} {'EMERGENCY':>11s} {'URGENT':>11s} {'ROUTINE':>11s}")
         for exp in triage_levels:
             row = confusion.get(exp, {})
-            print(f"{exp:>15s} {row.get('EMERGENCY', 0):>11d} {row.get('URGENT', 0):>11d} {row.get('ROUTINE', 0):>11d}")
-        print("=" * 70)
+            logger.info(f"{exp:>15s} {row.get('EMERGENCY', 0):>11d} {row.get('URGENT', 0):>11d} {row.get('ROUTINE', 0):>11d}")
+        logger.info("=" * 70)
 
         return report
 
     def show_test_cases(self):
         """Print all test cases (dry run)."""
-        print("\n" + "=" * 70)
-        print(f"MedAssist CHW - {len(self.test_cases)} Test Cases")
-        print("=" * 70)
+        logger.info("=" * 70)
+        logger.info(f"MedAssist CHW - {len(self.test_cases)} Test Cases")
+        logger.info("=" * 70)
 
         by_cat = {}
         for tc in self.test_cases:
             by_cat.setdefault(tc["category"], []).append(tc)
 
         for cat, cases in sorted(by_cat.items()):
-            print(f"\n--- {cat} ({len(cases)} cases) ---")
+            logger.info(f"--- {cat} ({len(cases)} cases) ---")
             for tc in cases:
                 safety = " [SAFETY-CRITICAL]" if tc["safety_critical"] else ""
                 ref = " [REFERRAL]" if tc["expected_referral"] else ""
-                print(f"  {tc['id']:5s} {tc['name']:45s} expect={tc['expected_triage']:10s}{safety}{ref}")
+                logger.info(f"  {tc['id']:5s} {tc['name']:45s} expect={tc['expected_triage']:10s}{safety}{ref}")
 
-        print(f"\nTotal: {len(self.test_cases)} cases")
-        print(f"  Emergency: {sum(1 for t in self.test_cases if t['expected_triage'] == 'EMERGENCY')}")
-        print(f"  Urgent:    {sum(1 for t in self.test_cases if t['expected_triage'] == 'URGENT')}")
-        print(f"  Routine:   {sum(1 for t in self.test_cases if t['expected_triage'] == 'ROUTINE')}")
-        print(f"  Safety-critical: {sum(1 for t in self.test_cases if t['safety_critical'])}")
+        logger.info(f"Total: {len(self.test_cases)} cases")
+        logger.info(f"  Emergency: {sum(1 for t in self.test_cases if t['expected_triage'] == 'EMERGENCY')}")
+        logger.info(f"  Urgent:    {sum(1 for t in self.test_cases if t['expected_triage'] == 'URGENT')}")
+        logger.info(f"  Routine:   {sum(1 for t in self.test_cases if t['expected_triage'] == 'ROUTINE')}")
+        logger.info(f"  Safety-critical: {sum(1 for t in self.test_cases if t['safety_critical'])}")
 
 
 # ============================================================================
@@ -862,12 +855,12 @@ class ModelComparison:
         """
         cases = TEST_CASES if max_cases <= 0 else TEST_CASES[:max_cases]
 
-        print("\n" + "=" * 70)
-        print(f"MODEL COMPARISON")
-        print(f"  Base      : {self.base_model}")
-        print(f"  Fine-tuned: {self.finetuned_model}")
-        print(f"  Cases     : {len(cases)}")
-        print("=" * 70)
+        logger.info("=" * 70)
+        logger.info("MODEL COMPARISON")
+        logger.info(f"  Base      : {self.base_model}")
+        logger.info(f"  Fine-tuned: {self.finetuned_model}")
+        logger.info(f"  Cases     : {len(cases)}")
+        logger.info("=" * 70)
 
         from langchain_ollama import OllamaLLM
         from ..core.config import settings
@@ -895,14 +888,13 @@ class ModelComparison:
 
         def _run_model(label: str, model_name: str) -> tuple:
             """Run all cases through a single model; return (report_or_results, success_list)."""
-            print(f"\n{'─' * 70}")
-            print(f"  Running: {label}  ({model_name})")
-            print(f"{'─' * 70}")
+            logger.info("─" * 70)
+            logger.info(f"  Running: {label}  ({model_name})")
+            logger.info("─" * 70)
             toolkit = _ParameterizedToolkit(model_name)
             results = []
             for i, tc in enumerate(cases, 1):
                 tc_start = time.time()
-                print(f"[{i:2d}/{len(cases)}] {tc['id']}: {tc['name']}", end=" ... ", flush=True)
                 try:
                     ca_tool = registry.get_tool("clinical_assessment")
                     out = ca_tool.execute({
@@ -920,7 +912,8 @@ class ModelComparison:
                         "over_triage": "OVER", "under_triage": "MISS",
                         "critical_miss": "FAIL", "mismatch": "FAIL",
                     }.get(ev["scores"]["triage_match"], "?")
-                    print(
+                    logger.info(
+                        f"[{i:2d}/{len(cases)}] {tc['id']}: {tc['name']} ... "
                         f"{ev['actual_triage']:10s} [{triage_icon:4s}] "
                         f"score={ev['scores']['composite']:.2f} ({ev['latency_s']}s)"
                     )
@@ -937,7 +930,7 @@ class ModelComparison:
                         "success": False, "error": str(e),
                         "latency_s": round(time.time() - tc_start, 1),
                     }
-                    print(f"ERROR: {e}")
+                    logger.error(f"[{i:2d}/{len(cases)}] {tc['id']}: {tc['name']} ERROR: {e}")
                 results.append(ev)
             return results
 
@@ -997,28 +990,27 @@ class ModelComparison:
             },
         }
 
-        # Pretty-print comparison table
+        # Log comparison table
         W = 70
         col_b = 14
         col_ft = 14
         col_d = 10
-        print("\n" + "=" * W)
-        print("MODEL COMPARISON RESULTS")
-        print("=" * W)
-        print(f"  Base      : {self.base_model}")
-        print(f"  Fine-tuned: {self.finetuned_model}")
-        print(f"  Cases     : {len(cases)}")
-        print()
+        logger.info("=" * W)
+        logger.info("MODEL COMPARISON RESULTS")
+        logger.info("=" * W)
+        logger.info(f"  Base      : {self.base_model}")
+        logger.info(f"  Fine-tuned: {self.finetuned_model}")
+        logger.info(f"  Cases     : {len(cases)}")
         hdr = f"{'Metric':<32s} {'Base':>{col_b}s} {'Fine-tuned':>{col_ft}s} {'Delta':>{col_d}s}"
-        print(hdr)
-        print("-" * W)
+        logger.info(hdr)
+        logger.info("-" * W)
 
         def row(label, base_val, ft_val, fmt=".3f", higher_is_better=True):
             delta = ft_val - base_val
             sign = "+" if delta >= 0 else ""
             better = (delta > 0) == higher_is_better
-            marker = " ✓" if better and abs(delta) > 0 else (" ✗" if not better and abs(delta) > 0 else "")
-            print(
+            marker = " [OK]" if better and abs(delta) > 0 else (" [WORSE]" if not better and abs(delta) > 0 else "")
+            logger.info(
                 f"  {label:<30s} {base_val:>{col_b}{fmt}} "
                 f"{ft_val:>{col_ft}{fmt}} "
                 f"{sign}{delta:>{col_d - 1}{fmt}}{marker}"
@@ -1032,7 +1024,7 @@ class ModelComparison:
             fmt=".0f", higher_is_better=False)
         row("Avg Latency (s)",         base_stats["avg_latency_s"],         ft_stats["avg_latency_s"],
             fmt=".1f", higher_is_better=False)
-        print("=" * W)
+        logger.info("=" * W)
 
         return comparison
 
@@ -1119,10 +1111,15 @@ Examples:
 
         with open(output_path, "w") as f:
             json.dump(make_serializable(report), f, indent=2)
-        print(f"\nResults saved to: {output_path}")
+        logger.info(f"Results saved to: {output_path}")
     except Exception as e:
-        print(f"\nFailed to save results: {e}")
+        logger.error(f"Failed to save results: {e}")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+        datefmt="%H:%M:%S",
+    )
     asyncio.run(main())

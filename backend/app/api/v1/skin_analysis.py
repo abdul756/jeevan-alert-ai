@@ -116,12 +116,12 @@ def _load_model(client, model_name: str):
     Uses a minimal generate call with keep_alive to warm the model.
     """
     try:
-        logger.info(f"🔄 Loading {model_name} into VRAM...")
+        logger.info(f"Loading {model_name} into VRAM...")
         # A blank prompt with keep_alive loads the model without generating
         client.generate(model=model_name, prompt="", keep_alive="5m")
-        logger.info(f"✅ {model_name} loaded")
+        logger.info(f"{model_name} loaded")
     except Exception as e:
-        logger.warning(f"⚠️ Pre-load of {model_name} failed (will try inference anyway): {e}")
+        logger.warning(f"Pre-load of {model_name} failed (will try inference anyway): {e}")
 
 
 def _unload_model(client, model_name: str):
@@ -130,11 +130,11 @@ def _unload_model(client, model_name: str):
     Uses keep_alive=0 which tells Ollama to immediately release the model.
     """
     try:
-        logger.info(f"🔄 Unloading {model_name} from VRAM...")
+        logger.info(f"Unloading {model_name} from VRAM...")
         client.generate(model=model_name, prompt="", keep_alive=0)
-        logger.info(f"✅ {model_name} unloaded — VRAM freed")
+        logger.info(f"{model_name} unloaded — VRAM freed")
     except Exception as e:
-        logger.warning(f"⚠️ Unload of {model_name} failed: {e}")
+        logger.warning(f"Unload of {model_name} failed: {e}")
 
 
 # ─── Endpoints ───────────────────────────────────────────────────
@@ -178,7 +178,7 @@ async def analyze_skin_lesion(
         _load_model(client, model_name)
 
         # Step 3: Run inference
-        logger.info(f"🔍 Running skin analysis with {model_name}...")
+        logger.info(f"Running skin analysis with {model_name}...")
         response = client.generate(
             model=model_name,
             prompt=prompt,
@@ -187,7 +187,7 @@ async def analyze_skin_lesion(
             keep_alive=0,  # Unload immediately after this request
         )
         raw_output = response.get("response", "")
-        logger.info(f"📋 Raw output: {raw_output}")
+        logger.info(f"Raw output: {raw_output}")
 
     except HTTPException:
         raise

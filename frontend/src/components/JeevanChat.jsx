@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Paperclip, Send, Stethoscope, ChevronDown, FileImage } from 'lucide-react';
-import './MwanzoChat.css';
+import './JeevanChat.css';
 
 const WELCOME_MESSAGE = {
     id: 'welcome',
@@ -22,7 +22,7 @@ function formatTime(date) {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-export default function MwanzoChat() {
+export default function JeevanChat() {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([WELCOME_MESSAGE]);
     const [inputValue, setInputValue] = useState('');
@@ -143,7 +143,7 @@ export default function MwanzoChat() {
                             setIsTyping(false);
                             setMessages(prev => prev.map(m =>
                                 m.id === botMsgId
-                                    ? { ...m, content: `⚠️ ${event.content}`, isStreaming: false }
+                                    ? { ...m, content: `Error: ${event.content}`, isStreaming: false }
                                     : m
                             ));
                             setStreamingMessageId(null);
@@ -152,7 +152,7 @@ export default function MwanzoChat() {
                 }
             }
 
-        } catch {
+        } catch (err) {
             // Graceful fallback — remove the empty streaming message, add static fallback
             setIsTyping(false);
             setStreamingMessageId(null);
@@ -222,7 +222,7 @@ export default function MwanzoChat() {
                         <div className="jeevanalert-message bot">
                             <div className="jeevanalert-message-sender">
                                 <span className="jeevanalert-sender-dot" />
-                                <span className="jeevanalert-sender-name">MwanzoScan AI</span>
+                                <span className="jeevanalert-sender-name">JeevanAlert AI</span>
                             </div>
                             <div className="jeevanalert-typing">
                                 <span className="jeevanalert-typing-dot" />
@@ -290,7 +290,7 @@ export default function MwanzoChat() {
             </div>
 
             {/* ---- Floating Action Button ---- */}
-            <button className={`jeevanalert-fab${isOpen ? ' open' : ''}`} onClick={toggleChat} aria-label="Toggle MwanzoScan AI chat">
+            <button className={`jeevanalert-fab${isOpen ? ' open' : ''}`} onClick={toggleChat} aria-label="Toggle JeevanAlert AI chat">
                 <span className="jeevanalert-fab-icon">
                     <MessageCircle size={16} />
                 </span>

@@ -351,36 +351,37 @@ GGUF export pipeline (run inside the Kaggle notebooks):
 **Quick start:**
 
 ```bash
-# 1. Install Ollama
+# ── Step 1: Install Ollama ────────────────────────────────────────────────────
 curl -fsSL https://ollama.ai/install.sh | sh
+ollama serve   # keep running in a separate terminal
 
-# 2. Download fine-tuned GGUF models from HuggingFace
+# ── Step 2: Download GGUF model files from HuggingFace ───────────────────────
 pip install -q huggingface_hub
+python download_models.py
+# Downloads to: ai_models/pretrained/ and ai_models/finetuned/
 
-# Navigate to the project root, then download each model into its directory:
+# ── Step 3: Load models into Ollama ──────────────────────────────────────────
+# Pretrained base — powers the JeevanAlert AI general chat (Q4_1, 3.4 GB)
+ollama create medgemma-1.5-4b-it -f ai_models/pretrained/medgemma-1.5-4b-it/Modelfile
 
-# CHW text model → ai_models/finetuned/medgemma-chw/
-huggingface-cli download manaf/finetuned-medgemma-1.5-4b-it \
-  medgemma-chw-q4_k_m.gguf \
-  --local-dir ai_models/finetuned/medgemma-chw
-
-# ISIC vision model (2 files) → ai_models/finetuned/isic-medgemma/
-huggingface-cli download manaf/finetuned-medgemma-1.5-4b-it \
-  medgemma-isic-Q4_K_M.gguf mmproj-medgemma-isic-f16.gguf \
-  --local-dir ai_models/finetuned/isic-medgemma
-
-# 3. Load models into Ollama
+# Fine-tuned CHW model — powers all 6 clinical workflow tools (Q4_K_M, 2.5 GB)
 ollama create medgemma-chw -f ai_models/finetuned/medgemma-chw/Modelfile
+
+# Fine-tuned ISIC vision model — powers skin cancer detection (Q4_K_M + F16 mmproj)
 ollama create isic-medgemma -f ai_models/finetuned/isic-medgemma/Modelfile
 
-# 4. Backend
+# Verify all three models are loaded
+ollama list
+
+# ── Step 4: Start the backend ─────────────────────────────────────────────────
 cd backend && source venv/bin/activate
 uvicorn app.main:app --reload   # http://localhost:8000
+# API docs: http://localhost:8000/docs
 
-# 5. Frontend
+# ── Step 5: Start the frontend ────────────────────────────────────────────────
 cd frontend && npm run dev       # http://localhost:5173
 
-# Or: Docker
+# ── Alternative: Docker Compose (runs all services in one command) ────────────
 docker compose up --build
 ```
 
@@ -397,18 +398,6 @@ python -m app.agents.competition_eval --compare
 
 # Save results
 python -m app.agents.competition_eval --output ./submission/evaluation_results.json
-```
-
-### REST API (15 Endpoints)
-
-```text
-POST /api/v1/workflow/execute-tool-workflow  # Run clinical workflow
-POST /api/v1/chat/                           # Vaidya chat (streaming SSE)
-GET  /api/v1/patients                        # Patient list
-POST /api/v1/encounters                      # Create encounter
-POST /api/v1/observations                    # Record vitals
-GET  /api/v1/analytics/dashboard             # Performance metrics
-... and 9 more
 ```
 
 ### Privacy and Safety

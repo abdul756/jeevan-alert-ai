@@ -23,14 +23,14 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """Manage application lifecycle."""
     # Startup
-    logger.info(f"🚀 Starting {settings.app_name} v{settings.app_version}")
-    logger.info(f"📍 Offline Mode: {settings.offline_mode}")
-    logger.info(f"🤖 LangGraph + MedGemma Tool-Based Orchestrator Active")
-    
+    logger.info(f"Starting {settings.app_name} v{settings.app_version}")
+    logger.info(f"Offline Mode: {settings.offline_mode}")
+    logger.info("LangGraph + MedGemma Tool-Based Orchestrator Active")
+
     # Initialize database
     await init_db()
-    logger.info("✅ Database initialized")
-    
+    logger.info("Database initialized")
+
     # Initialize Ollama model manager (eager load)
     from .core.medgemma_tools import get_medgemma_toolkit
     toolkit = get_medgemma_toolkit()
@@ -39,25 +39,25 @@ async def lifespan(app: FastAPI):
     except Exception:
         pass
     model_info = toolkit.get_model_info()
-    logger.info(f"🔧 Model Manager Status: {model_info['status']}")
+    logger.info(f"Model Manager Status: {model_info['status']}")
     if model_info['status'] == 'loaded':
-        logger.info(f"✅ Model: {model_info['model']}")
+        logger.info(f"Model: {model_info['model']}")
     else:
-        logger.warning("⚠️  Ollama model not loaded - running in DEMO mode")
-        logger.warning("   💡 Start Ollama with: ollama serve")
-    
+        logger.warning("Ollama model not loaded - running in DEMO mode")
+        logger.warning("Start Ollama with: ollama serve")
+
     logger.info("=" * 60)
-    logger.info("🏥 CHW Clinical Decision Support System")
-    logger.info("📊 11 REST APIs Active")
-    logger.info("🤖 7 MedGemma Tools Operational")
+    logger.info("CHW Clinical Decision Support System")
+    logger.info("11 REST APIs Active")
+    logger.info("7 MedGemma Tools Operational")
     logger.info("=" * 60)
-    
+
     yield
-    
+
     # Shutdown
-    logger.info("🛑 Shutting down application...")
+    logger.info("Shutting down application...")
     await close_db()
-    logger.info("✅ Shutdown complete")
+    logger.info("Shutdown complete")
 
 
 # Create FastAPI app
@@ -86,7 +86,7 @@ uploads_dir = Path(__file__).parent.parent / "uploads"
 uploads_dir.mkdir(exist_ok=True)
 
 app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
-logger.info(f"📁 Static file serving enabled: {uploads_dir}")
+logger.info(f"Static file serving enabled: {uploads_dir}")
 
 
 # Health check endpoint
@@ -213,11 +213,11 @@ app.include_router(
     tags=["system-testing"]
 )
 
-# MwanzoScan AI Chat (medgemma-1.5-4b-it streaming)
+# JeevanAlert AI Chat (medgemma-1.5-4b-it streaming)
 app.include_router(
     chat_router.router,
     prefix=f"{settings.api_v1_prefix}/chat",
-    tags=["mwanzoscan-chat"]
+    tags=["jeevanalert-chat"]
 )
 
 
