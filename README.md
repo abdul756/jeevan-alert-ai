@@ -1,6 +1,6 @@
 # JeevanAlert AI: Smart Detection. Rural Reach. Real Impact
 
-## Your Team
+## Team Members
 
 **Abdul** — Full-stack developer and AI/ML engineer
 Solo project: system architecture, MedGemma fine-tuning, LangGraph workflow, frontend/backend development.
