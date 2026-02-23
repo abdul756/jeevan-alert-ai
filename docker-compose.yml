@@ -1,0 +1,66 @@
+version: "3.8"
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    # ports:
+    #   - "11434:11434" # Commented out to prevent conflict if host runs Ollama
+    environment:
+      - OLLAMA_KV_CACHE_TYPE=q4_0
+      - OLLAMA_KEEP_ALIVE=5m
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./ai_models:/models:ro
+    restart: unless-stopped
+
+  ollama-init:
+    image: ollama/ollama:latest
+    depends_on:
+      - ollama
+    volumes:
+      - ./ai_models:/models:ro
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      echo 'Waiting for Ollama to become ready...';
+      while ! ollama list >/dev/null 2>&1; do sleep 2; done;
+      echo 'Creating medgemma-chw...';
+      ollama create medgemma-chw -f /models/finetuned/medgemma-chw/Modelfile;
+      echo 'Creating isic-medgemma...';
+      ollama create isic-medgemma -f /models/finetuned/isic-medgemma/Modelfile;
+      echo 'Creating medgemma-1.5-4b-it...';
+      ollama create medgemma-1.5-4b-it -f /models/pretrained/medgemma-1.5-4b-it/Modelfile;
+      echo 'All models initialized successfully!'
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_MODEL_NAME=medgemma-chw
+      - ISIC_OLLAMA_MODEL=isic-medgemma
+      - CHAT_OLLAMA_MODEL=medgemma-1.5-4b-it
+      - OLLAMA_HOST=http://ollama:11434
+      - DATABASE_URL=sqlite+aiosqlite:///./data/chw_system.db
+      - OFFLINE_MODE=true
+    depends_on:
+      - ollama
+    volumes:
+      - backend_data:/app/data
+    restart: unless-stopped
+
+  frontend:
+    build: 
+      context: ./frontend
+      args:
+        VITE_API_URL: /api/v1
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+  backend_data:

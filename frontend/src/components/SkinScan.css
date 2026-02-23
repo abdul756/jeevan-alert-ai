@@ -1,0 +1,130 @@
+/* Charma Scan - Skin Lesion Analysis Component Styles */
+
+.upload-zone {
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    padding: 40px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fafafa;
+}
+
+.upload-zone:hover {
+    border-color: #DB2777;
+    background: #fef2f8;
+}
+
+.upload-zone.dragging {
+    border-color: #EC4899;
+    background: #fce7f3;
+    transform: scale(1.02);
+}
+
+/* Dark mode upload zone */
+.upload-zone.dark {
+    background: #0f172a;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.upload-zone.dark:hover {
+    border-color: #EC4899;
+    background: rgba(236, 72, 153, 0.1);
+}
+
+.upload-zone.dark.dragging {
+    border-color: #EC4899;
+    background: rgba(236, 72, 153, 0.15);
+}
+
+.upload-zone img {
+    max-height: 300px;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+/* Smooth transitions for cards (scoped to SkinScan) */
+.skin-scan-page .card {
+    transition: all 0.3s ease;
+}
+
+/* Progress bar animation */
+.progress-bar {
+    transition: width 0.6s ease;
+}
+
+/* Badge animations */
+.badge {
+    transition: all 0.2s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .upload-zone {
+        min-height: 150px;
+        padding: 30px 15px;
+    }
+
+    .upload-zone img {
+        max-height: 200px;
+    }
+}
+
+/* Button hover effects */
+.btn {
+    transition: all 0.2s ease;
+}
+
+.btn:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+.btn:not(:disabled):active {
+    transform: translateY(0);
+}
+
+/* Spinner customization */
+.spinner-border {
+    border-width: 3px;
+}
+
+/* Alert animations */
+.alert {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Custom scrollbar for main content */
+main::-webkit-scrollbar {
+    width: 8px;
+}
+
+main::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+main::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+main::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

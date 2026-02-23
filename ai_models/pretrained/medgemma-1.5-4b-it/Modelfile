@@ -1,0 +1,12 @@
+FROM ./medgemma-1.5-4b-it-Q4_1.gguf
+FROM ./mmproj-F16.gguf
+
+TEMPLATE """<start_of_turn>user
+{{ if .System }}{{ .System }} {{ end }}{{ .Prompt }}<end_of_turn>
+<start_of_turn>model
+{{ .Response }}<end_of_turn>
+"""
+
+PARAMETER stop "<end_of_turn>"
+PARAMETER num_ctx 4096
+SYSTEM "You are a helpful medical AI assistant capable of analyzing medical images."

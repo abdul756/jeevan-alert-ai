@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+backend/venv/
+venv/
+.venv/
+
+# Node
+frontend/node_modules/
+node_modules/
+
+# Environment files
+.env
+backend/.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build/cache
+.vite/
+*.log
+
+# Large data files (download separately)
+isic-2024-challenge/
+isic-2024-challenge.zip
+finetuned_medgemma_model/
+
+# Database
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+*.gguf

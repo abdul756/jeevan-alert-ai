@@ -1,0 +1,46 @@
+[project]
+name = "medassist-chw"
+version = "0.1.0"
+description = "MedAssist CHW - AI-Powered Clinical Decision Support for Community Health Workers"
+requires-python = ">=3.10"
+dependencies = [
+    # Web framework
+    "fastapi==0.129.0",
+    "uvicorn[standard]==0.27.0",
+    "python-multipart==0.0.6",
+
+    # HTTP client
+    "httpx==0.28.1",
+
+    # Pydantic / Settings
+    "pydantic==2.12.4",
+    "pydantic-settings==2.12.0",
+    "pydantic[email]",
+
+    # LangChain / AI (Ollama-based inference)
+    "langchain-core==1.2.7",
+    "langchain-ollama==1.0.1",
+    "langgraph==1.0.7",
+    "langgraph-checkpoint-sqlite==3.0.3",
+
+    # Database
+    "sqlalchemy==2.0.25",
+    "aiosqlite==0.22.1",
+
+    # File I/O
+    "aiofiles==25.1.0",
+
+    # Utilities
+    "tenacity==8.2.3",
+    "python-dotenv==1.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0",
+    "pytest-asyncio>=1.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

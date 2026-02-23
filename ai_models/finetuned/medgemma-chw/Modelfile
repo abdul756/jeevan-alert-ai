@@ -1,0 +1,43 @@
+# MedGemma CHW Fine-tuned Model v2
+# Trained on 1,200 tool-aligned examples from training_data_tool_aligned_train.jsonl
+# 200 examples per tool × 6 tools:
+#   clinical_assessment, soap_note, treatment_advisor,
+#   risk_assessor, referral_advisor, emergency_protocol
+# This is the TEXT backbone (tools 1-6). For skin cancer vision, see ../isic-medgemma/Modelfile
+
+FROM ./medgemma-chw-q4_k_m.gguf
+
+# Model parameters
+PARAMETER temperature 0.3
+PARAMETER top_p 0.9
+PARAMETER top_k 40
+PARAMETER num_ctx 4096
+PARAMETER repeat_penalty 1.1
+
+# Stop token — prevents generating past the model turn boundary
+PARAMETER stop "<end_of_turn>"
+
+# System prompt — kept minimal since the model is fine-tuned for JSON output
+SYSTEM """You are MedGemma-CHW, a clinical AI assistant fine-tuned to support Community Health Workers.
+
+You provide structured JSON responses for clinical decision support including:
+- Clinical assessment and triage
+- SOAP note generation
+- Treatment recommendations
+- Risk assessment
+- Referral decisions
+- Emergency protocols
+
+Guidelines:
+- Always respond with valid JSON when instructed
+- Prioritize patient safety — flag emergencies immediately
+- Indicate when referral to a higher facility is needed
+- Consider resource limitations in rural/underserved settings"""
+
+# Template for chat format (Gemma-compatible)
+TEMPLATE """<start_of_turn>user
+{{ if .System }}{{ .System }}
+
+{{ end }}{{ .Prompt }}<end_of_turn>
+<start_of_turn>model
+{{ .Response }}<end_of_turn>"""

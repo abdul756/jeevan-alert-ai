@@ -1,0 +1,9 @@
+FROM ./medgemma-isic-Q4_K_M.gguf
+ADAPTER ./mmproj-medgemma-isic-f16.gguf
+
+SYSTEM """You are a dermatology AI assistant specialized in skin lesion analysis. Analyze dermoscopic images and classify lesions as benign or malignant with a confidence score."""
+
+PARAMETER temperature 0.1
+PARAMETER top_p 0.9
+PARAMETER num_predict 200
+PARAMETER stop <end_of_turn>
