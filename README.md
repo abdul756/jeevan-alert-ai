@@ -382,7 +382,19 @@ uvicorn app.main:app --reload   # http://localhost:8000
 cd frontend && npm run dev       # http://localhost:5173
 
 # ── Alternative: Docker Compose (runs all services in one command) ────────────
+# Step 1: Build and start all services (backend, frontend, Ollama)
 docker compose up --build
+
+# Step 2: Load models into the Ollama container (run after build completes)
+docker exec -it jeevan-alert-ai-ollama-1 /bin/sh
+ollama create medgemma-chw -f /models/finetuned/medgemma-chw/Modelfile
+ollama create isic-medgemma -f /models/finetuned/isic-medgemma/Modelfile
+ollama create medgemma-1.5-4b-it -f /models/pretrained/medgemma-1.5-4b-it/Modelfile
+ollama list
+exit
+
+# Step 3: Open the app
+# http://localhost
 ```
 
 **Clinical evaluation (34 test cases):**

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JeevanAlert AI — Video Visuals</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --saffron: #FF9933;
+    --saffron-light: #FFB347;
+    --teal: #00C9B1;
+    --teal-dim: #00998A;
+    --crimson: #E63946;
+    --green: #2EC4B6;
+    --dark: #070B14;
+    --dark2: #0D1525;
+    --dark3: #111D35;
+    --card: #131E34;
+    --border: rgba(255,153,51,0.2);
+    --text: #E8EDF5;
+    --muted: #7A8AAA;
+    --white: #FFFFFF;
+  }
+
+  html, body { width: 100%; height: 100%; background: var(--dark); font-family: 'Sora', sans-serif; color: var(--text); overflow: hidden; }
+
+  /* SLIDE SYSTEM */
+  .slides { width: 1280px; height: 720px; position: relative; margin: 0 auto; overflow: hidden; }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 60px; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; }
+  .slide.active { opacity: 1; pointer-events: all; }
+
+  /* NAVIGATION */
+  .nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 1000; align-items: center; }
+  .nav-btn { background: rgba(255,153,51,0.15); border: 1px solid var(--border); color: var(--saffron); padding: 8px 20px; border-radius: 4px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 13px; transition: all 0.2s; }
+  .nav-btn:hover { background: rgba(255,153,51,0.3); }
+  .slide-counter { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); min-width: 60px; text-align: center; }
+  .dot-nav { display: flex; gap: 8px; align-items: center; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); cursor: pointer; transition: all 0.3s; }
+  .dot.active { background: var(--saffron); width: 20px; border-radius: 3px; }
+
+  /* SHARED COMPONENTS */
+  .logo-badge { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--saffron); letter-spacing: 3px; text-transform: uppercase; border: 1px solid var(--border); padding: 6px 16px; border-radius: 2px; }
+  .slide-tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--teal); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 20px; }
+  .section-label { position: absolute; top: 36px; right: 60px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 2px; }
+  .timestamp { position: absolute; top: 36px; left: 60px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+
+  /* BACKGROUND GRID */
+  .bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,153,51,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,153,51,0.03) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
+  .bg-glow { position: absolute; border-radius: 50%; filter: blur(120px); pointer-events: none; }
+
+  /* ============== SLIDE 1: TITLE ============== */
+  #s1 { background: var(--dark); }
+  #s1 .bg-glow-1 { width: 600px; height: 600px; background: rgba(255,153,51,0.07); top: -200px; left: -100px; }
+  #s1 .bg-glow-2 { width: 400px; height: 400px; background: rgba(0,201,177,0.06); bottom: -150px; right: -50px; }
+  #s1 .centerpiece { text-align: center; z-index: 2; }
+  #s1 .hackathon-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--teal); letter-spacing: 5px; margin-bottom: 32px; opacity: 0.8; }
+  #s1 .main-title { font-size: 88px; font-weight: 800; line-height: 0.95; letter-spacing: -3px; }
+  #s1 .main-title .jeev { color: var(--white); }
+  #s1 .main-title .alert { color: var(--saffron); }
+  #s1 .main-title .ai { color: var(--teal); font-size: 72px; }
+  #s1 .tagline { font-family: 'Crimson Pro', serif; font-size: 22px; font-style: italic; color: var(--muted); margin-top: 24px; letter-spacing: 0.5px; }
+  #s1 .meta { display: flex; gap: 40px; margin-top: 48px; justify-content: center; }
+  #s1 .meta-item { text-align: center; }
+  #s1 .meta-item .val { font-size: 13px; font-weight: 600; color: var(--saffron); font-family: 'JetBrains Mono', monospace; }
+  #s1 .meta-item .lab { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+  #s1 .divider-h { width: 1px; height: 40px; background: var(--border); }
+  #s1 .bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--saffron), var(--teal), transparent); }
+
+  /* ============== SLIDE 2: THE PROBLEM ============== */
+  #s2 { background: var(--dark); }
+  #s2 .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; width: 100%; z-index: 2; }
+  #s2 .left h2 { font-size: 52px; font-weight: 800; line-height: 1; letter-spacing: -2px; margin-bottom: 24px; }
+  #s2 .left h2 span { color: var(--saffron); }
+  #s2 .quote { font-family: 'Crimson Pro', serif; font-size: 19px; font-style: italic; color: var(--text); line-height: 1.7; border-left: 3px solid var(--saffron); padding-left: 20px; }
+  #s2 .right { display: flex; flex-direction: column; gap: 20px; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 24px 28px; position: relative; overflow: hidden; }
+  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--saffron); }
+  .stat-card.teal::before { background: var(--teal); }
+  .stat-card.red::before { background: var(--crimson); }
+  .stat-card .num { font-size: 48px; font-weight: 800; color: var(--saffron); line-height: 1; }
+  .stat-card.teal .num { color: var(--teal); }
+  .stat-card.red .num { color: var(--crimson); }
+  .stat-card .desc { font-size: 13px; color: var(--muted); margin-top: 6px; letter-spacing: 0.3px; }
+
+  /* ============== SLIDE 3: THE SOLUTION — MODELS ============== */
+  #s3 { background: var(--dark); }
+  #s3 .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%; z-index: 2; align-items: start; }
+  #s3 .slide-header { grid-column: 1/-1; margin-bottom: 10px; }
+  #s3 h2 { font-size: 42px; font-weight: 800; letter-spacing: -1.5px; }
+  #s3 h2 span { color: var(--saffron); }
+  .model-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 32px; position: relative; }
+  .model-card .model-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--teal); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
+  .model-card .model-name { font-size: 22px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+  .model-card .model-name span { color: var(--saffron); }
+  .model-card .model-desc { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 20px; }
+  .model-card .model-stat { display: flex; gap: 24px; flex-wrap: wrap; }
+  .mstat { }
+  .mstat .v { font-size: 28px; font-weight: 700; color: var(--saffron); }
+  .mstat .l { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .model-card.vision { border-color: rgba(0,201,177,0.3); }
+  .model-card.vision .model-tag { color: var(--saffron); }
+  .model-card.vision .mstat .v { color: var(--teal); }
+  .offline-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,201,177,0.1); border: 1px solid rgba(0,201,177,0.3); padding: 6px 14px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--teal); margin-top: 16px; }
+  .offline-badge::before { content: '●'; color: var(--teal); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+  /* ============== SLIDE 4: AGENTIC WORKFLOW ============== */
+  #s4 { background: var(--dark); }
+  #s4 .layout { width: 100%; z-index: 2; }
+  #s4 h2 { font-size: 38px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 8px; }
+  #s4 h2 span { color: var(--teal); }
+  #s4 .sub { font-size: 14px; color: var(--muted); margin-bottom: 32px; }
+  .workflow-diagram { display: flex; align-items: center; gap: 0; width: 100%; }
+  .wf-orchestrator { background: linear-gradient(135deg, rgba(255,153,51,0.15), rgba(255,153,51,0.05)); border: 2px solid var(--saffron); border-radius: 10px; padding: 20px 24px; text-align: center; min-width: 160px; position: relative; }
+  .wf-orchestrator .wf-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--saffron); letter-spacing: 3px; text-transform: uppercase; }
+  .wf-orchestrator .wf-name { font-size: 14px; font-weight: 700; color: var(--white); margin-top: 6px; }
+  .wf-orchestrator .wf-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .wf-arrow { display: flex; align-items: center; flex: 1; position: relative; }
+  .wf-arrow .line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--saffron), var(--teal)); }
+  .wf-arrow .arrowhead { color: var(--teal); font-size: 16px; }
+  .wf-tools-col { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .wf-tool { background: var(--card); border: 1px solid rgba(0,201,177,0.25); border-radius: 6px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; }
+  .wf-tool .tool-icon { font-size: 14px; }
+  .wf-tool .tool-name { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--teal); }
+  .wf-tool.guardrail { border-color: rgba(255,153,51,0.4); }
+  .wf-tool.guardrail .tool-name { color: var(--saffron); }
+  .wf-tool.emergency { border-color: rgba(230,57,70,0.4); background: rgba(230,57,70,0.05); }
+  .wf-tool.emergency .tool-name { color: var(--crimson); }
+  .guardrails-box { background: rgba(255,153,51,0.05); border: 1px solid rgba(255,153,51,0.2); border-radius: 8px; padding: 16px 20px; }
+  .guardrails-box .gr-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--saffron); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; }
+  .guardrail-item { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; color: var(--muted); padding: 4px 0; }
+  .guardrail-item .gr-num { color: var(--saffron); font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 11px; min-width: 18px; }
+
+  /* ============== SLIDE 5: TERMINAL DEMO ============== */
+  #s5 { background: var(--dark); }
+  #s5 .layout { width: 100%; z-index: 2; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; }
+  #s5 h2 { font-size: 36px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 6px; }
+  #s5 h2 span { color: var(--crimson); }
+  #s5 .case-card { background: rgba(230,57,70,0.05); border: 1px solid rgba(230,57,70,0.3); border-radius: 8px; padding: 20px 24px; margin-bottom: 20px; }
+  #s5 .case-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--crimson); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
+  #s5 .case-patient { font-size: 16px; font-weight: 600; color: var(--white); }
+  #s5 .case-symptoms { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .terminal { background: #080F1C; border: 1px solid rgba(0,201,177,0.2); border-radius: 8px; padding: 0; overflow: hidden; }
+  .terminal-titlebar { background: #0D1A30; padding: 10px 16px; display: flex; align-items: center; gap: 8px; }
+  .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .t-dot.red { background: #FF5F57; }
+  .t-dot.yellow { background: #FFBD2E; }
+  .t-dot.green { background: #28CA41; }
+  .t-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-left: 8px; }
+  .terminal-body { padding: 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.8; }
+  .t-line { display: block; }
+  .t-brain { color: #A78BFA; }
+  .t-tool { color: var(--teal); }
+  .t-triage { color: var(--crimson); font-weight: 700; }
+  .t-hitl { color: var(--saffron); }
+  .t-success { color: #4ADE80; }
+  .t-time { color: #F59E0B; }
+  .t-muted { color: var(--muted); }
+  .timing-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); padding: 8px 16px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #4ADE80; margin-top: 12px; }
+
+  /* ============== SLIDE 6: METRICS ============== */
+  #s6 { background: var(--dark); }
+  #s6 .layout { width: 100%; z-index: 2; }
+  #s6 h2 { font-size: 42px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 6px; }
+  #s6 h2 span { color: var(--saffron); }
+  #s6 .sub { font-size: 14px; color: var(--muted); margin-bottom: 32px; }
+  .metrics-table { width: 100%; border-collapse: collapse; }
+  .metrics-table thead th { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); padding: 14px 20px; text-align: left; border-bottom: 1px solid var(--border); }
+  .metrics-table thead th.ja { color: var(--teal); }
+  .metrics-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.2s; }
+  .metrics-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .metrics-table td { padding: 18px 20px; font-size: 16px; }
+  .metrics-table .metric-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .metrics-table .base-val { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 18px; }
+  .metrics-table .ja-val { color: var(--teal); font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; }
+  .gain-badge { display: inline-block; background: rgba(0,201,177,0.1); border: 1px solid rgba(0,201,177,0.3); color: var(--teal); font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 4px 12px; border-radius: 4px; font-weight: 700; }
+  .gain-badge.big { background: rgba(255,153,51,0.1); border-color: rgba(255,153,51,0.4); color: var(--saffron); }
+  .cases-note { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 16px; }
+
+  /* ============== SLIDE 7: IMPACT ============== */
+  #s7 { background: var(--dark); }
+  #s7 .layout { width: 100%; z-index: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  #s7 .slide-header { grid-column: 1/-1; }
+  #s7 h2 { font-size: 42px; font-weight: 800; letter-spacing: -1.5px; }
+  #s7 h2 span { color: var(--saffron); }
+  #s7 .sub { font-size: 14px; color: var(--muted); margin-top: 4px; }
+  .impact-table { width: 100%; }
+  .impact-row { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .impact-row:first-child { border-radius: 8px 8px 0 0; overflow: hidden; }
+  .impact-cell { padding: 16px 18px; }
+  .impact-cell.before { background: rgba(230,57,70,0.04); border-right: 1px solid rgba(255,255,255,0.05); }
+  .impact-cell.after { background: rgba(0,201,177,0.04); }
+  .impact-header { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; padding: 12px 18px; }
+  .impact-header.before { background: rgba(230,57,70,0.1); color: var(--crimson); }
+  .impact-header.after { background: rgba(0,201,177,0.1); color: var(--teal); }
+  .impact-val { font-size: 20px; font-weight: 700; color: var(--muted); }
+  .impact-val.after-val { color: var(--teal); }
+  .impact-label { font-size: 12px; color: rgba(122,138,170,0.7); margin-top: 4px; }
+  .scale-numbers { display: flex; flex-direction: column; gap: 16px; }
+  .scale-item { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; }
+  .scale-item .s-num { font-size: 42px; font-weight: 800; color: var(--saffron); line-height: 1; }
+  .scale-item .s-desc { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  /* ============== SLIDE 8: OFFLINE ============== */
+  #s8 { background: var(--dark); }
+  #s8 .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; width: 100%; z-index: 2; align-items: center; }
+  #s8 .left h2 { font-size: 44px; font-weight: 800; letter-spacing: -1.5px; line-height: 1.05; margin-bottom: 20px; }
+  #s8 .left h2 .highlight { color: var(--teal); }
+  #s8 .left p { font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 24px; }
+  .spec-list { display: flex; flex-direction: column; gap: 12px; }
+  .spec-item { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text); }
+  .spec-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+  .laptop-visual { background: var(--card); border: 1px solid rgba(0,201,177,0.3); border-radius: 12px; padding: 30px; }
+  .laptop-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .airplane-mode { display: flex; align-items: center; gap: 8px; background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.3); padding: 6px 14px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--crimson); }
+  .laptop-terminal { background: #060D1A; border-radius: 6px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.9; }
+  .lt-prompt { color: var(--teal); }
+  .lt-cmd { color: var(--white); }
+  .lt-out { color: #4ADE80; }
+  .lt-dim { color: var(--muted); }
+  .privacy-badge { display: flex; align-items: center; gap: 10px; background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); padding: 12px 18px; border-radius: 6px; margin-top: 16px; }
+  .privacy-badge .pb-icon { font-size: 18px; }
+  .privacy-badge .pb-text { font-size: 13px; color: #4ADE80; font-weight: 600; }
+
+  /* ============== SLIDE 9: CLOSING ============== */
+  #s9 { background: var(--dark); }
+  #s9 .bg-glow-1 { width: 700px; height: 700px; background: rgba(255,153,51,0.06); top: -300px; right: -200px; }
+  #s9 .bg-glow-2 { width: 500px; height: 500px; background: rgba(0,201,177,0.05); bottom: -200px; left: -100px; }
+  #s9 .centerpiece { text-align: center; z-index: 2; }
+  #s9 .tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--teal); letter-spacing: 5px; margin-bottom: 28px; }
+  #s9 .big-name { font-size: 96px; font-weight: 800; letter-spacing: -4px; line-height: 0.9; }
+  #s9 .big-name .j { color: var(--white); }
+  #s9 .big-name .a { color: var(--saffron); }
+  #s9 .big-name .ai-tag { font-size: 56px; color: var(--teal); }
+  #s9 .closing-tagline { font-family: 'Crimson Pro', serif; font-size: 24px; font-style: italic; color: var(--muted); margin-top: 24px; max-width: 700px; line-height: 1.5; }
+  #s9 .tech-stack { display: flex; gap: 16px; justify-content: center; margin-top: 36px; flex-wrap: wrap; }
+  .tech-pill { background: var(--card); border: 1px solid var(--border); padding: 8px 20px; border-radius: 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); }
+  #s9 .bottom-line { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+
+  /* FULLSCREEN HELPER */
+  .fullscreen-hint { position: fixed; top: 16px; right: 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); z-index: 1000; background: rgba(7,11,20,0.8); border: 1px solid var(--border); padding: 6px 12px; border-radius: 4px; }
+
+  /* Scale wrapper */
+  body { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; }
+  .scale-wrapper { transform-origin: center center; }
+</style>
+</head>
+<body>
+
+<div class="fullscreen-hint">Press F for fullscreen · ← → to navigate</div>
+
+<div class="scale-wrapper">
+<div class="slides" id="slideContainer">
+
+  <!-- SLIDE 1: TITLE -->
+  <div class="slide active" id="s1">
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="centerpiece">
+      <div class="hackathon-label">Google HAI-DEF Hackathon · MedGemma Impact Challenge 2026</div>
+      <div class="main-title">
+        <span class="jeev">Jeevan</span><span class="alert">Alert</span>
+        <br>
+        <span class="ai">AI</span>
+      </div>
+      <div class="tagline">Physician-level clinical reasoning in every ASHA worker's hands</div>
+      <div class="meta">
+        <div class="meta-item">
+          <div class="val">1,000,000</div>
+          <div class="lab">ASHA Workers</div>
+        </div>
+        <div class="divider-h"></div>
+        <div class="meta-item">
+          <div class="val">MedGemma</div>
+          <div class="lab">Fine-Tuned × 2</div>
+        </div>
+        <div class="divider-h"></div>
+        <div class="meta-item">
+          <div class="val">100% Offline</div>
+          <div class="lab">No Internet Required</div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-bar"></div>
+  </div>
+
+  <!-- SLIDE 2: THE PROBLEM -->
+  <div class="slide" id="s2">
+    <div class="bg-grid"></div>
+    <div class="timestamp">00:00 — 00:30</div>
+    <div class="section-label">SEGMENT 01 / THE PROBLEM</div>
+    <div class="layout">
+      <div class="left">
+        <div class="slide-tag">The Problem</div>
+        <h2>A broken<br><span>last mile</span><br>in healthcare</h2>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.7;">Sunita Devi is an ASHA worker in Sheohar, Bihar. She walks 12 km a day, sees 30 patients, and makes life-or-death decisions with an 8-week training and no internet.</p>
+        <div class="quote">
+          "One missed diagnosis changed a child's life forever."
+        </div>
+      </div>
+      <div class="right">
+        <div class="stat-card">
+          <div class="num">1M</div>
+          <div class="desc">ASHA workers across India making daily clinical decisions</div>
+        </div>
+        <div class="stat-card teal">
+          <div class="num">60%</div>
+          <div class="desc">Baseline diagnostic accuracy — without AI support</div>
+        </div>
+        <div class="stat-card red">
+          <div class="num">ZERO</div>
+          <div class="desc">AI tools designed for offline, rural CHW workflows</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: THE SOLUTION — TWO MODELS -->
+  <div class="slide" id="s3">
+    <div class="bg-grid"></div>
+    <div class="timestamp">00:30 — 00:50</div>
+    <div class="section-label">SEGMENT 02 / THE SOLUTION</div>
+    <div class="layout">
+      <div class="slide-header">
+        <div class="slide-tag">Fine-Tuned Twice</div>
+        <h2>Two <span>MedGemma</span> Models, One Mission</h2>
+      </div>
+      <div class="model-card">
+        <div class="model-tag">Model 01 · Clinical Reasoning</div>
+        <div class="model-name">MedGemma <span>CHW-Text</span></div>
+        <div class="model-desc">Fine-tuned on 1,200 tool-aligned clinical examples across 6 CHW workflow tools. Enables structured clinical reasoning for community health worker protocols.</div>
+        <div class="model-stat">
+          <div class="mstat"><div class="v">1,200</div><div class="l">Training Examples</div></div>
+          <div class="mstat"><div class="v">6</div><div class="l">Clinical Tools</div></div>
+          <div class="mstat"><div class="v">+23pp</div><div class="l">Triage Accuracy</div></div>
+        </div>
+        <div class="offline-badge">Runs via Ollama · CPU-only</div>
+      </div>
+      <div class="model-card vision">
+        <div class="model-tag">Model 02 · Vision / Dermatology</div>
+        <div class="model-name">MedGemma <span>ISIC-Vision</span></div>
+        <div class="model-desc">Fine-tuned on ISIC 2024 dermoscopic dataset for skin cancer detection. Forces dermoscopic analysis before any other tool fires — a hard-coded safety guardrail.</div>
+        <div class="model-stat">
+          <div class="mstat"><div class="v">0.88</div><div class="l">AUC Score</div></div>
+          <div class="mstat"><div class="v">ISIC 2024</div><div class="l">Dataset</div></div>
+          <div class="mstat"><div class="v">×2</div><div class="l">Safety Detection</div></div>
+        </div>
+        <div class="offline-badge">Patient data never leaves device</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: AGENTIC WORKFLOW -->
+  <div class="slide" id="s4">
+    <div class="bg-grid"></div>
+    <div class="timestamp">00:50 — 01:20</div>
+    <div class="section-label">SEGMENT 02 / ARCHITECTURE</div>
+    <div class="layout">
+      <div class="slide-tag">Agentic Workflow</div>
+      <h2>Orchestrator + 7 Tools + <span>5 Safety Guardrails</span></h2>
+      <div class="sub">Hard-coded rules that cannot be overridden — safety by architecture, not by prompting</div>
+      <div style="display:grid;grid-template-columns:auto 40px 1fr 40px auto;gap:0;align-items:center;">
+        <!-- Orchestrator -->
+        <div class="wf-orchestrator">
+          <div class="wf-label">Orchestrator</div>
+          <div class="wf-name">MedGemma<br>CHW-Text</div>
+          <div class="wf-sub">LangGraph Agent</div>
+        </div>
+        <!-- Arrow right -->
+        <div style="display:flex;align-items:center;height:100%;">
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,var(--saffron),var(--teal));"></div>
+          <div style="color:var(--teal);font-size:18px;">▶</div>
+        </div>
+        <!-- Tools -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div class="wf-tool emergency"><span class="tool-icon">🚨</span><span class="tool-name">clinical_assessment</span></div>
+          <div class="wf-tool emergency"><span class="tool-icon">🆘</span><span class="tool-name">emergency_protocol</span></div>
+          <div class="wf-tool"><span class="tool-icon">🔬</span><span class="tool-name">dermoscopic_analysis</span></div>
+          <div class="wf-tool"><span class="tool-icon">⚕️</span><span class="tool-name">risk_assessment</span></div>
+          <div class="wf-tool"><span class="tool-icon">📋</span><span class="tool-name">referral_decision</span></div>
+          <div class="wf-tool"><span class="tool-icon">💊</span><span class="tool-name">treatment_guidance</span></div>
+          <div class="wf-tool" style="grid-column:1/-1;"><span class="tool-icon">📄</span><span class="tool-name">soap_note_generator</span></div>
+        </div>
+        <!-- Arrow left -->
+        <div style="display:flex;align-items:center;height:100%;">
+          <div style="color:var(--saffron);font-size:18px;">◀</div>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,var(--teal),var(--saffron));"></div>
+        </div>
+        <!-- Guardrails -->
+        <div class="guardrails-box">
+          <div class="gr-title">🛡 Safety Guardrails</div>
+          <div class="guardrail-item"><span class="gr-num">1</span> Clinical assessment must always run first</div>
+          <div class="guardrail-item"><span class="gr-num">2</span> Emergencies → HITL confirmation required</div>
+          <div class="guardrail-item"><span class="gr-num">3</span> Skin images force dermoscopy before all other tools</div>
+          <div class="guardrail-item"><span class="gr-num">4</span> Risk + referral run in parallel</div>
+          <div class="guardrail-item"><span class="gr-num">5</span> No SOAP note = workflow cannot end</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: LIVE TERMINAL DEMO -->
+  <div class="slide" id="s5">
+    <div class="bg-grid"></div>
+    <div class="timestamp">01:20 — 01:50</div>
+    <div class="section-label">SEGMENT 03 / LIVE DEMO</div>
+    <div class="layout">
+      <div>
+        <div class="slide-tag">Live Clinical Case</div>
+        <h2>Guardrail <span>Fires</span> in Real Time</h2>
+        <div style="height:16px;"></div>
+        <div class="case-card">
+          <div class="case-label">🩺 Test Case 01 · EMERGENT</div>
+          <div class="case-patient">72-year-old Female</div>
+          <div class="case-symptoms">Chest pain radiating to jaw · Shortness of breath · Diaphoresis · BP 160/95 mmHg</div>
+        </div>
+        <div class="spec-list">
+          <div class="spec-item"><div class="spec-dot" style="background:var(--crimson)"></div> Classic STEMI presentation</div>
+          <div class="spec-item"><div class="spec-dot" style="background:var(--saffron)"></div> Guardrail 1 fires: assessment first</div>
+          <div class="spec-item"><div class="spec-dot" style="background:var(--teal)"></div> Guardrail 2 fires: HITL pause</div>
+        </div>
+        <div class="timing-badge">⚡ End-to-end: 11.9 seconds</div>
+      </div>
+      <div>
+        <div class="terminal">
+          <div class="terminal-titlebar">
+            <div class="t-dot red"></div>
+            <div class="t-dot yellow"></div>
+            <div class="t-dot green"></div>
+            <div class="t-title">competition_eval.py — JeevanAlert AI</div>
+          </div>
+          <div class="terminal-body">
+            <span class="t-line t-muted">$ python -m app.agents.competition_eval</span>
+            <span class="t-line t-muted">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+            <span class="t-line"><span class="t-brain">🧠 ORCHESTRATOR</span> <span class="t-muted">No assessment yet —</span></span>
+            <span class="t-line t-muted">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; clinical_assessment must come first</span>
+            <span class="t-line">&nbsp;</span>
+            <span class="t-line"><span class="t-tool">🔧 clinical_assessment</span></span>
+            <span class="t-line"><span class="t-triage">&nbsp;&nbsp;→ TRIAGE: EMERGENT</span></span>
+            <span class="t-line t-muted">&nbsp;&nbsp;→ RED FLAGS: Chest pain radiating,</span>
+            <span class="t-line t-muted">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;diaphoresis, jaw radiation</span>
+            <span class="t-line">&nbsp;</span>
+            <span class="t-line"><span class="t-brain">🧠 ORCHESTRATOR</span> <span class="t-crimson" style="color:var(--crimson);">Emergency detected</span></span>
+            <span class="t-line"><span class="t-hitl">⏸  HUMAN-IN-LOOP</span> <span class="t-muted">CHW confirmation required...</span></span>
+            <span class="t-line"><span class="t-hitl">&nbsp;&nbsp;&nbsp;&nbsp;ASHA confirms →</span> <span class="t-muted">[PROCEED]</span></span>
+            <span class="t-line">&nbsp;</span>
+            <span class="t-line"><span class="t-success">✅ emergency_protocol</span></span>
+            <span class="t-line t-muted">&nbsp;&nbsp;→ Call 108 immediately</span>
+            <span class="t-line t-muted">&nbsp;&nbsp;→ Aspirin 325mg (no allergy)</span>
+            <span class="t-line t-muted">&nbsp;&nbsp;→ Lay flat, monitor vitals</span>
+            <span class="t-line">&nbsp;</span>
+            <span class="t-line"><span class="t-time">⏱  Total latency: 11.9s</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: METRICS -->
+  <div class="slide" id="s6">
+    <div class="bg-grid"></div>
+    <div class="timestamp">01:50 — 02:15</div>
+    <div class="section-label">SEGMENT 03 / PERFORMANCE</div>
+    <div class="layout">
+      <div class="slide-tag">Head-to-Head Results</div>
+      <h2>Fine-Tuning <span>Quantified</span></h2>
+      <div class="sub">34 clinical cases · Emergency triage · Hypertensive crisis · High-risk pregnancy · Skin cancer · Chronic disease</div>
+      <table class="metrics-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Base MedGemma</th>
+            <th class="ja">JeevanAlert AI</th>
+            <th>Gain</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="metric-name">Composite Score</td>
+            <td class="base-val">0.780</td>
+            <td class="ja-val">0.876</td>
+            <td><span class="gain-badge">+12%</span></td>
+          </tr>
+          <tr>
+            <td class="metric-name">Triage Accuracy</td>
+            <td class="base-val">44.1%</td>
+            <td class="ja-val">67.6%</td>
+            <td><span class="gain-badge big">+23 pp</span></td>
+          </tr>
+          <tr>
+            <td class="metric-name">Safety Detection Rate</td>
+            <td class="base-val">35.7%</td>
+            <td class="ja-val">71.4%</td>
+            <td><span class="gain-badge big">×2</span></td>
+          </tr>
+          <tr>
+            <td class="metric-name">Latency / Case</td>
+            <td class="base-val">35.6s</td>
+            <td class="ja-val">11.9s</td>
+            <td><span class="gain-badge big">3× faster</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="cases-note">★ No hallucinated drug names. No missed red flags across all 34 test cases.</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: IMPACT -->
+  <div class="slide" id="s7">
+    <div class="bg-grid"></div>
+    <div class="timestamp">02:15 — 02:35</div>
+    <div class="section-label">SEGMENT 04 / IMPACT</div>
+    <div class="layout">
+      <div class="slide-header">
+        <div class="slide-tag">Impact at Scale</div>
+        <h2>For Every ASHA, <span>Measurable Change</span></h2>
+        <div class="sub">At 350,000 ASHA workers — the scale compounds</div>
+      </div>
+      <div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+          <div class="impact-header before">❌ Before</div>
+          <div class="impact-header after">✅ After JeevanAlert AI</div>
+          <div class="impact-cell before"><div class="impact-val">60%</div><div class="impact-label">Diagnostic Accuracy</div></div>
+          <div class="impact-cell after"><div class="impact-val after-val">90%</div><div class="impact-label">+50% improvement</div></div>
+          <div class="impact-cell before"><div class="impact-val">25–30 min</div><div class="impact-label">Per Patient</div></div>
+          <div class="impact-cell after"><div class="impact-val after-val">12–15 min</div><div class="impact-label">−52% time saved</div></div>
+          <div class="impact-cell before"><div class="impact-val">40%</div><div class="impact-label">Documentation Complete</div></div>
+          <div class="impact-cell after"><div class="impact-val after-val">95%</div><div class="impact-label">SOAP compliance</div></div>
+          <div class="impact-cell before"><div class="impact-val">15–20</div><div class="impact-label">Patients / Day</div></div>
+          <div class="impact-cell after"><div class="impact-val after-val">25–35</div><div class="impact-label">+75% throughput</div></div>
+        </div>
+      </div>
+      <div class="scale-numbers">
+        <div class="scale-item">
+          <div class="s-num">26M</div>
+          <div class="s-desc">Additional patients served per year at 350K ASHAs</div>
+        </div>
+        <div class="scale-item">
+          <div class="s-num" style="color:var(--teal);">175K</div>
+          <div class="s-desc">Lives saved annually from improved emergency detection</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: OFFLINE -->
+  <div class="slide" id="s8">
+    <div class="bg-grid"></div>
+    <div class="timestamp">02:35 — 02:50</div>
+    <div class="section-label">SEGMENT 04 / OFFLINE PROOF</div>
+    <div class="layout">
+      <div class="left">
+        <div class="slide-tag">Privacy by Architecture</div>
+        <h2>Fully <span class="highlight">Offline.</span><br>Zero Data Egress.</h2>
+        <p>The entire stack — three MedGemma models, all 7 tools, LangGraph orchestration — runs on a $300, 8GB RAM CPU laptop with no internet connection.</p>
+        <div class="spec-list">
+          <div class="spec-item"><div class="spec-dot"></div> <strong>Ollama</strong> serves models locally</div>
+          <div class="spec-item"><div class="spec-dot"></div> Patient data never leaves the device</div>
+          <div class="spec-item"><div class="spec-dot"></div> Works in areas with zero connectivity</div>
+        </div>
+      </div>
+      <div>
+        <div class="laptop-visual">
+          <div class="laptop-header">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);">💻 $300 Laptop · 8GB RAM · CPU-only</div>
+            <div class="airplane-mode">✈ OFFLINE MODE</div>
+          </div>
+          <div class="laptop-terminal">
+            <div><span class="lt-prompt">$ </span><span class="lt-cmd">ollama serve &amp;</span></div>
+            <div><span class="lt-out">✓ Ollama running on 127.0.0.1:11434</span></div>
+            <div><span class="lt-prompt">$ </span><span class="lt-cmd">python -m app.agents.jeevenalert</span></div>
+            <div><span class="lt-out">✓ medgemma-chw-text loaded</span></div>
+            <div><span class="lt-out">✓ medgemma-isic-vision loaded</span></div>
+            <div><span class="lt-out">✓ All 7 tools initialized</span></div>
+            <div><span class="lt-out">✓ LangGraph agent ready</span></div>
+            <div><span class="lt-dim">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span></div>
+            <div><span class="lt-out">Network: NONE · Inference: LOCAL</span></div>
+            <div><span class="lt-out">Data egress: 0 bytes</span></div>
+          </div>
+          <div class="privacy-badge">
+            <div class="pb-icon">🔒</div>
+            <div class="pb-text">Patient data never leaves the device — ever.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: CLOSING -->
+  <div class="slide" id="s9">
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="centerpiece">
+      <div class="tag">Google HAI-DEF · MedGemma Impact Challenge 2026</div>
+      <div class="big-name">
+        <span class="j">Jeevan</span><span class="a">Alert</span>
+        <br>
+        <span class="ai-tag">AI</span>
+      </div>
+      <div class="closing-tagline">
+        "Physician-level clinical reasoning, in every ASHA's hands — offline, private, and ready to deploy."
+      </div>
+      <div class="tech-stack">
+        <div class="tech-pill">MedGemma × Fine-Tuned ×2</div>
+        <div class="tech-pill">LangGraph Orchestration</div>
+        <div class="tech-pill">Ollama · CPU Inference</div>
+        <div class="tech-pill">7 Clinical Tools</div>
+        <div class="tech-pill">5 Safety Guardrails</div>
+      </div>
+    </div>
+    <div class="bottom-line">JeevanAlert AI · HAI-DEF 2026 · Built for India's Last Mile</div>
+  </div>
+
+</div><!-- slides -->
+</div><!-- scale-wrapper -->
+
+<!-- NAVIGATION -->
+<div class="nav">
+  <button class="nav-btn" id="prevBtn">← PREV</button>
+  <div class="dot-nav" id="dotNav"></div>
+  <div class="slide-counter" id="slideCounter">1 / 9</div>
+  <button class="nav-btn" id="nextBtn">NEXT →</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dotNav = document.getElementById('dotNav');
+  const counter = document.getElementById('slideCounter');
+  let current = 0;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    dotNav.appendChild(dot);
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dotNav.children[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dotNav.children[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${slides.length}`;
+  }
+
+  document.getElementById('prevBtn').onclick = () => goTo(current - 1);
+  document.getElementById('nextBtn').onclick = () => goTo(current + 1);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') goTo(current + 1);
+    if (e.key === 'ArrowLeft') goTo(current - 1);
+    if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+
+  // Scale to viewport
+  function scaleSlides() {
+    const wrapper = document.querySelector('.scale-wrapper');
+    const vw = window.innerWidth;
+    const vh = window.innerHeight - 60; // reserve nav
+    const scaleX = vw / 1280;
+    const scaleY = vh / 720;
+    const scale = Math.min(scaleX, scaleY);
+    wrapper.style.transform = `scale(${scale})`;
+  }
+  window.addEventListener('resize', scaleSlides);
+  scaleSlides();
+</script>
+</body>
+</html>
