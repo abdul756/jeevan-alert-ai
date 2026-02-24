@@ -105,6 +105,9 @@ async def get_encounter_trends(
     for enc in encounters:
         # Normalize triage level to lowercase and handle None/empty values
         level = (enc.triage_level or "not_assessed").lower().strip()
+        # Map 'emergency' (tool output) to 'emergent' (display key)
+        if level == "emergency":
+            level = "emergent"
         # Map to known categories, default to not_assessed if unknown
         if level not in triage_counts:
             level = "not_assessed"
