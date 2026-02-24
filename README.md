@@ -3,7 +3,7 @@
 ## Team Members
 
 **Abdul Manaf F** — Full-stack developer and AI/ML engineer
-Solo project: system architecture, MedGemma fine-tuning, LangGraph workflow, frontend/backend development.
+
 
 ---
 
