@@ -374,7 +374,14 @@ ollama create isic-medgemma -f ai_models/finetuned/isic-medgemma/Modelfile
 ollama list
 
 # ── Step 4: Start the backend ─────────────────────────────────────────────────
-cd backend && source venv/bin/activate
+# Install uv (fast Python package manager) if not already installed
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install dependencies and create .venv automatically
+cd backend && uv sync
+
+# Activate the virtual environment and start the server
+source .venv/bin/activate
 uvicorn app.main:app --reload   # http://localhost:8000
 # API docs: http://localhost:8000/docs
 
