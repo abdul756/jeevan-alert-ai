@@ -510,7 +510,7 @@ The codebase is organized around three principles: registry-based extensibility,
 │       │   ├── Dashboard.jsx
 │       │   ├── ImageUpload.jsx
 │       │   ├── LoginPage.jsx
-│       │   ├── MwanzoChat.jsx
+│       │   ├── JeevanChat.jsx
 │       │   ├── NewEncounter.jsx
 │       │   ├── NewPatientForm.jsx
 │       │   ├── PatientDetails.jsx
