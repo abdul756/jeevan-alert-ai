@@ -76,7 +76,7 @@ export default function JeevanChat() {
         setStreamingMessageId(botMsgId);
 
         try {
-            const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+            const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
             const formData = new FormData();
             formData.append('message', text || 'Analyze this image');
             if (capturedFile) formData.append('image', capturedFile);
