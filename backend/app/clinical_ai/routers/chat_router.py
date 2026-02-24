@@ -1,5 +1,5 @@
 """
-MwanzoScan AI Chat — Streaming SSE endpoint
+JeevanAlert AI Chat — Streaming SSE endpoint
 Uses medgemma-1.5-4b-it via Ollama for conversational medical imaging assistance.
 Supports both text-only and multimodal (image + text) requests.
 """
@@ -34,7 +34,7 @@ async def _stream_generator(message: str, image_bytes: Optional[bytes]):
         if image_bytes is not None:
             yield _sse({"type": "status", "content": "Analyzing image..."})
             prompt = (
-                "You are MwanzoScan AI, a medical imaging assistant. "
+                "You are JeevanAlert AI, a medical imaging assistant. "
                 "Analyze this medical image carefully and provide clinical insights, "
                 "key findings, and any relevant recommendations.\n\n"
                 f"User question: {message or 'Describe the findings in this image.'}"
@@ -46,7 +46,7 @@ async def _stream_generator(message: str, image_bytes: Optional[bytes]):
             ])
         else:
             prompt = (
-                "You are MwanzoScan AI, a medical imaging and clinical assistant. "
+                "You are JeevanAlert AI, a medical imaging and clinical assistant. "
                 f"Answer the following concisely and accurately:\n\n{message}"
             )
             msg = HumanMessage(content=prompt)
@@ -58,7 +58,7 @@ async def _stream_generator(message: str, image_bytes: Optional[bytes]):
         yield _sse({"type": "done"})
 
     except Exception as exc:
-        logger.error(f"MwanzoScan chat stream error: {exc}")
+        logger.error(f"JeevanAlert chat stream error: {exc}")
         yield _sse({"type": "error", "content": str(exc)})
         yield _sse({
             "type": "token",
@@ -71,12 +71,12 @@ async def _stream_generator(message: str, image_bytes: Optional[bytes]):
 
 
 @router.post("/")
-async def mwanzo_chat(
+async def jeevanalert_chat(
     message: str = Form(""),
     image: Optional[UploadFile] = File(None),
 ):
     """
-    Streaming SSE endpoint for MwanzoScan AI chat widget.
+    Streaming SSE endpoint for JeevanAlert AI chat widget.
     Uses medgemma-1.5-4b-it via Ollama for both text and image requests.
 
     Request: multipart/form-data

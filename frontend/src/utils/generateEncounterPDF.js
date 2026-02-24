@@ -141,7 +141,7 @@ export function generateEncounterPDF(encounter, aiResult, vitals, patientName) {
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(18);
         doc.setFont('helvetica', 'bold');
-        doc.text('VaidyaAI - Clinical Encounter Report', margin, 13);
+        doc.text('JeevanAlert AI - Clinical Encounter Report', margin, 13);
 
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
@@ -589,7 +589,7 @@ export function generateEncounterPDF(encounter, aiResult, vitals, patientName) {
             doc.setFont('helvetica', 'italic');
             doc.setTextColor(...COLORS.muted);
             doc.text(
-                'VaidyaAI Clinical Report - AI-generated, for clinical decision support only. Not a substitute for professional medical judgment.',
+                'JeevanAlert AI Clinical Report - AI-generated, for clinical decision support only. Not a substitute for professional medical judgment.',
                 margin, footerY
             );
             doc.text(`Page ${i} of ${pageCount}`, pageWidth - margin - 20, footerY);

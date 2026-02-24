@@ -1,5 +1,5 @@
 /**
- * API Service for VaidyaAI - CHW Clinical Decision Support
+ * API Service for JeevanAlert AI - CHW Clinical Decision Support
  * Connects frontend to LangGraph + FastAPI backend
  */
 

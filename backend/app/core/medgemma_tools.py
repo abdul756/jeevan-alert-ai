@@ -7,7 +7,7 @@ handlers for three distinct models:
 
 1. `chw_llm`: Fine-tuned MedGemma-CHW (Ollama, text-only). Used by the specialized clinical tools via `_invoke`.
 2. `isic_llm`: Fine-tuned ISIC MedGemma (Ollama multimodal, vision+text). Used by the SkinCancerDetectionTool.
-3. `chat_llm`: Pretrained general MwanzoScan Chat model. Used by the streaming chat router.
+3. `chat_llm`: Pretrained general JeevanAlert Chat model. Used by the streaming chat router.
 
 Specific clinical tools (e.g., Clinical Assessment, SOAP Note Generation) are
 implemented as OOP adapters in `app/clinical_ai/tools/` and use this toolkit
@@ -166,7 +166,7 @@ class MedGemmaToolkit:
 
     @property
     def chat_llm(self) -> ChatOllama:
-        """Lazy-load Pretrained MwanzoScan Chat LLM (streaming text + multimodal)."""
+        """Lazy-load Pretrained JeevanAlert Chat LLM (streaming text + multimodal)."""
         if self._chat_llm is None:
             self._chat_llm = ChatOllama(
                 model=settings.chat_ollama_model,
@@ -174,7 +174,7 @@ class MedGemmaToolkit:
                 num_predict=800,
                 num_ctx=512,  # Added to prevent OOM
             )
-            logger.info(f"MwanzoScan Chat LLM loaded: {settings.chat_ollama_model}")
+            logger.info(f"JeevanAlert Chat LLM loaded: {settings.chat_ollama_model}")
         return self._chat_llm
 
     def _invoke(self, prompt: str) -> Dict[str, Any]:

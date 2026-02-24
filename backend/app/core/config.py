@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
     
     # Application
-    app_name: str = "MwanzoScanAI - CHW Clinical Decision Support"
+    app_name: str = "JeevanAlert AI - CHW Clinical Decision Support"
     app_version: str = "1.0.0"
     debug: bool = False
     
@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     model_temperature: float = 0.3
     ollama_model_name: str = "medgemma-chw"  # Fine-tuned CHW workflow model
     isic_ollama_model: str = "isic-medgemma" # Fine-tuned ISIC skin cancer model (Multimodal)
-    chat_ollama_model: str = "medgemma-1.5-4b-it" # Pretrained Vaidya Chat model
+    chat_ollama_model: str = "medgemma-1.5-4b-it" # Pretrained jeevanalert Chat model
     max_image_size_mb: int = 10
     
     # RAG Configuration
